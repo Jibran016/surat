@@ -1,248 +1,174 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', 'Dashboard - SURATIN')
 
 @section('content')
-
-<!-- Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-body {
-    background: #f4f6f9;
-}
-
-.dashboard-wrapper {
-    max-width: 1300px;
-    margin: 40px auto;
-    padding: 0 20px;
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-}
-
-/* Header */
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-}
-
-.dashboard-title {
-    font-size: 30px;
-    font-weight: 700;
-    color: #111827;
-}
-
-.dashboard-subtitle {
-    color: #6b7280;
-    margin-top: 6px;
-}
-
-.user-badge {
-    background: #ffffff;
-    padding: 10px 18px;
-    border-radius: 12px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
-    font-size: 14px;
-    font-weight: 500;
-}
-
-/* Stats */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
-.stat-card {
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 18px;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.06);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: 0.25s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 34px rgba(0,0,0,0.08);
-}
-
-.stat-info h2 {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 0;
-}
-
-.stat-info span {
-    color: #6b7280;
-    font-size: 14px;
-}
-
-.stat-icon {
-    width: 45px;
-    height: 45px;
-    background: #eef2ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-}
-
-/* Menu Cards */
-.menu-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
-}
-
-.menu-card {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 20px;
-    text-decoration: none;
-    color: inherit;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.06);
-    transition: 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.menu-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.1);
-}
-
-.menu-card h3 {
-    margin-top: 15px;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.menu-card p {
-    margin-top: 8px;
-    font-size: 14px;
-    color: #6b7280;
-}
-
-.menu-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 14px;
-    color: white;
-}
-
-/* Special Create Button */
-.menu-card.primary {
-    background: linear-gradient(135deg, #2563eb, #1e3a8a);
-    color: white;
-}
-
-.menu-card.primary p {
-    color: rgba(255,255,255,0.85);
-}
-
-.menu-card.primary .menu-icon {
-    background: rgba(255,255,255,0.2);
-}
-</style>
-
-<div class="dashboard-wrapper">
-
-    <!-- Header -->
-    <div class="dashboard-header">
-        <div>
-            <div class="dashboard-title">Dashboard</div>
-            <div class="dashboard-subtitle">
-                Sistem surat internal antar divisi.
-            </div>
-        </div>
-        <div class="user-badge">
-            {{ auth()->user()->name }}
-        </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-info">
-                <h2>{{ $masukCount }}</h2>
-                <span>Surat Masuk</span>
-            </div>
-            <div class="stat-icon">
-                <i data-lucide="inbox"></i>
-            </div>
+<div class="mx-auto w-full max-w-6xl">
+    <section class="grid h-[calc(100vh-200px)] grid-cols-12 gap-2 overflow-hidden">
+        <div class="col-span-7 flex h-[86px] items-center justify-between rounded-3xl border border-pink-100 bg-white/90 px-5 py-3 shadow-[0_26px_50px_-40px_rgba(236,72,153,0.45)]">
+            <h1 class="text-lg font-semibold text-slate-900">Selamat Datang, Admin {{ auth()->user()->username }}</h1>
+            <a href="{{ route('surat.create') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-pink-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-pink-700">
+                <i data-lucide="plus" class="h-4 w-4"></i>
+                Buat Surat
+            </a>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-info">
-                <h2>{{ $keluarCount }}</h2>
-                <span>Surat Keluar</span>
-            </div>
-            <div class="stat-icon">
-                <i data-lucide="send"></i>
-            </div>
+        <div class="col-span-5 grid h-[86px] grid-cols-2 gap-3">
+            <a href="{{ route('surat.outbox') }}" class="flex flex-col justify-between rounded-2xl border border-pink-100 bg-pink-50/60 p-3.5 transition hover:bg-pink-100/60">
+                <div class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-pink-500/20 text-pink-700">
+                    <i data-lucide="send" class="h-3.5 w-3.5"></i>
+                </div>
+                <div>
+                    <div class="text-base font-semibold text-slate-900">{{ $keluarCount }}</div>
+                    <div class="text-[10px] uppercase tracking-wide text-slate-500">Keluar</div>
+                </div>
+            </a>
+
+            <a href="{{ route('surat.archive') }}" class="flex flex-col justify-between rounded-2xl border border-pink-100 bg-pink-50/60 p-3.5 transition hover:bg-pink-100/60">
+                <div class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-pink-500/20 text-pink-700">
+                    <i data-lucide="archive" class="h-3.5 w-3.5"></i>
+                </div>
+                <div>
+                    <div class="text-base font-semibold text-slate-900">{{ $arsipCount }}</div>
+                    <div class="text-[10px] uppercase tracking-wide text-slate-500">Arsip</div>
+                </div>
+            </a>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-info">
-                <h2>{{ $arsipCount }}</h2>
-                <span>Arsip</span>
+        <div class="col-span-8 flex flex-col rounded-3xl border border-pink-100 bg-white/90 p-4 shadow-sm" style="height: calc(100vh - 200px - 86px - 84px - 8px);">
+            <div class="mb-2 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-slate-900">Surat Masuk Terbaru</h2>
+                <a href="{{ route('surat.inbox') }}" class="text-xs font-semibold text-pink-700 hover:text-pink-800">Lihat Semua</a>
             </div>
-            <div class="stat-icon">
-                <i data-lucide="archive"></i>
+
+            @if (!empty($inboxPreview) && $inboxPreview->isNotEmpty())
+                <div class="flex-1 overflow-y-auto overflow-x-hidden rounded-2xl border border-pink-100">
+                    <table class="w-full text-xs">
+                        <thead class="bg-pink-50/60 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            <tr>
+                                <th class="px-3 py-2">Tanggal</th>
+                                <th class="px-3 py-2">Dari</th>
+                                <th class="px-3 py-2">Judul</th>
+                                <th class="px-3 py-2 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-pink-100/70 bg-white">
+                            @foreach ($inboxPreview as $surat)
+                                <tr>
+                                    <td class="px-3 py-2 text-slate-600">{{ optional($surat->sent_at)?->timezone(config('app.timezone'))->format('d M Y H:i') ?? '-' }}</td>
+                                    <td class="px-3 py-2 text-slate-600">{{ $surat->sender_division }}</td>
+                                    <td class="px-3 py-2 font-medium text-slate-800">{{ $surat->judul }}</td>
+                                    <td class="px-3 py-2 text-right">
+                                        <div class="flex items-center justify-end gap-3">
+                                            <a class="text-xs font-semibold text-pink-700 hover:text-pink-800" href="{{ route('surat.show', $surat) }}">Detail</a>
+                                            <a class="text-xs font-semibold text-pink-700 hover:text-pink-800" href="{{ route('surat.reply', $surat) }}">Balas</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="rounded-2xl border border-pink-100 bg-pink-50/30 p-4 text-sm text-slate-500">Belum ada surat masuk.</div>
+            @endif
+        </div>
+
+        <div class="col-span-4 flex flex-col overflow-hidden rounded-3xl border border-pink-100 bg-white/90 p-4 shadow-sm" style="height: calc(100vh - 200px - 86px - 84px - 8px);">
+            <div class="mb-2 flex items-center justify-between">
+                <a href="{{ route('dashboard.chart', ['mode' => ($chartMode ?? 'bulanan')]) }}" class="text-sm font-semibold text-slate-900 hover:text-pink-700">Grafik Surat</a>
+                <div class="flex h-8 w-8 items-center justify-center rounded-2xl bg-pink-100 text-pink-700">
+                    <i data-lucide="chart-column" class="h-4 w-4"></i>
+                </div>
+            </div>
+            <div class="mb-2 flex items-center gap-2 text-[11px] text-pink-100/80">
+                <span class="rounded-full border border-pink-200/60 px-2.5 py-0.5 {{ ($chartMode ?? 'bulanan') === 'mingguan' ? 'bg-pink-600 text-white' : 'bg-white/10 text-pink-100/80' }}">Mingguan</span>
+                <span class="rounded-full border border-pink-200/60 px-2.5 py-0.5 {{ ($chartMode ?? 'bulanan') === 'bulanan' ? 'bg-pink-600 text-white' : 'bg-white/10 text-pink-100/80' }}">Bulanan</span>
+            </div>
+            <div class="flex-1 overflow-hidden rounded-2xl border border-pink-100/70 bg-black/20 p-3 cursor-pointer" data-chart-link="{{ route('dashboard.chart', ['mode' => ($chartMode ?? 'bulanan')]) }}">
+                <canvas id="suratChart" height="190" style="width: 100%; max-width: 100%;"></canvas>
             </div>
         </div>
-    </div>
-
-    <!-- Menu -->
-    <div class="menu-grid">
-
-        <a href="{{ route('surat.create') }}" class="menu-card primary">
-            <div class="menu-icon">
-                <i data-lucide="plus"></i>
-            </div>
-            <h3>Buat Surat</h3>
-            <p>Kirim surat baru ke divisi lain dengan cepat.</p>
-        </a>
-
-        <a href="{{ route('surat.inbox') }}" class="menu-card">
-            <div class="menu-icon">
-                <i data-lucide="mail"></i>
-            </div>
-            <h3>Surat Masuk</h3>
-            <p>Lihat dan tindak lanjuti surat yang diterima.</p>
-        </a>
-
-        <a href="{{ route('surat.outbox') }}" class="menu-card">
-            <div class="menu-icon">
-                <i data-lucide="send-horizontal"></i>
-            </div>
-            <h3>Surat Keluar</h3>
-            <p>Pantau status surat yang telah dikirim.</p>
-        </a>
-
-        <a href="{{ route('surat.archive') }}" class="menu-card">
-            <div class="menu-icon">
-                <i data-lucide="folder"></i>
-            </div>
-            <h3>Arsip</h3>
-            <p>Kelola surat yang telah selesai diproses.</p>
-        </a>
-
-    </div>
-
+    </section>
 </div>
 
 <script>
     lucide.createIcons();
-</script>
 
+    const chartEl = document.getElementById('suratChart');
+    const chartBox = document.querySelector('[data-chart-link]');
+    if (chartBox) {
+        chartBox.addEventListener('click', function () {
+            const url = chartBox.getAttribute('data-chart-link');
+            if (url) {
+                window.location.href = url;
+            }
+        });
+    }
+
+    if (chartEl) {
+        const chartLabels = @json($chartLabels ?? []);
+        const masukData = @json($chartMasukData ?? []);
+        const keluarData = @json($chartKeluarData ?? []);
+        const maxValue = Math.max(...masukData, ...keluarData, 1);
+
+        new Chart(chartEl, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        label: 'Surat Masuk',
+                        data: masukData,
+                        borderColor: '#ff73ea',
+                        backgroundColor: 'rgba(255, 115, 234, 0.18)',
+                        pointBackgroundColor: '#ff9cf0',
+                        pointRadius: 3,
+                        tension: 0.35,
+                        fill: true,
+                    },
+                    {
+                        label: 'Surat Keluar',
+                        data: keluarData,
+                        borderColor: '#ffd0f7',
+                        backgroundColor: 'rgba(255, 208, 247, 0.12)',
+                        pointBackgroundColor: '#ffe6fb',
+                        pointRadius: 3,
+                        tension: 0.35,
+                        fill: true,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: '#f5f2ff',
+                            boxWidth: 12,
+                            usePointStyle: true,
+                        },
+                    },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: maxValue + 1,
+                        ticks: { precision: 0, color: '#e8dff7' },
+                        grid: { color: 'rgba(255, 122, 232, 0.18)' },
+                    },
+                    x: {
+                        ticks: { color: '#f5f2ff' },
+                        grid: { display: false },
+                    },
+                },
+            },
+        });
+    }
+</script>
 @endsection

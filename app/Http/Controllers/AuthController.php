@@ -19,7 +19,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'username' => ['required', 'string'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
@@ -30,8 +30,8 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'username' => 'Username atau password tidak valid.',
-        ])->onlyInput('username');
+            'email' => 'Email atau password tidak valid.',
+        ])->onlyInput('email');
     }
 
     public function logout(Request $request)
@@ -44,4 +44,3 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 }
-

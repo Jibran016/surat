@@ -16,9 +16,12 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/grafik', [DashboardController::class, 'chart'])->name('dashboard.chart');
+    Route::get('/dashboard/monitoring', [DashboardController::class, 'monitoring'])->name('dashboard.monitoring');
 
     Route::get('/surat/buat', [SuratController::class, 'create'])->name('surat.create');
     Route::post('/surat', [SuratController::class, 'store'])->name('surat.store');
@@ -29,6 +32,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/surat/{surat}', [SuratController::class, 'show'])->name('surat.show');
     Route::get('/surat/{surat}/pdf', [SuratController::class, 'downloadPdf'])->name('surat.pdf');
+    Route::get('/surat/{surat}/lampiran', [SuratController::class, 'attachment'])->name('surat.attachment');
     Route::post('/surat/{surat}/arsip', [SuratController::class, 'archive'])->name('surat.archive.store');
     Route::post('/surat/{surat}/selesai', [SuratController::class, 'markDone'])->name('surat.done');
     Route::get('/surat/{surat}/balas', [SuratController::class, 'replyForm'])->name('surat.reply');

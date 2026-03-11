@@ -12,12 +12,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::orderBy('division')
-            ->orderBy('role')
-            ->orderBy('username')
-            ->paginate(12);
-
-        return view('users.index', compact('users'));
+        return redirect()->route('users.create');
     }
 
     public function create()
@@ -40,7 +35,7 @@ class UserController extends Controller
                 Rule::exists('divisions', 'name'),
             ],
             'role' => ['required', 'in:User,Admin'],
-            'email' => ['nullable', 'email', 'max:120', 'unique:users,email'],
+            'email' => ['required', 'email', 'max:120', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
         ]);
 
@@ -52,7 +47,7 @@ class UserController extends Controller
 
         User::create($data);
 
-        return redirect()->route('users.index')->with('status', 'Akun berhasil dibuat.');
+        return redirect()->route('users.create')->with('status', 'Akun berhasil dibuat.');
     }
 
     public function edit(User $user)
@@ -75,7 +70,7 @@ class UserController extends Controller
                 Rule::exists('divisions', 'name'),
             ],
             'role' => ['required', 'in:User,Admin'],
-            'email' => ['nullable', 'email', 'max:120', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'email', 'max:120', 'unique:users,email,' . $user->id],
             'password' => ['nullable', 'string', 'min:6'],
         ]);
 
@@ -91,18 +86,18 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('users.index')->with('status', 'Akun berhasil diperbarui.');
+        return redirect()->route('users.create')->with('status', 'Akun berhasil diperbarui.');
     }
 
     public function destroy(User $user)
     {
         if ($user->role === 'Admin' && User::where('role', 'Admin')->count() <= 1) {
-            return redirect()->route('users.index')->with('status', 'Minimal harus ada satu admin.');
+            return redirect()->route('users.create')->with('status', 'Minimal harus ada satu admin.');
         }
 
         $user->delete();
 
-        return redirect()->route('users.index')->with('status', 'Akun berhasil dihapus.');
+        return redirect()->route('users.create')->with('status', 'Akun berhasil dihapus.');
     }
 
     private function divisionOptions(): array

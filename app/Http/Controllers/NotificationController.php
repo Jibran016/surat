@@ -42,6 +42,17 @@ class NotificationController extends Controller
             $notification->update(['read_at' => now()]);
         }
 
+        if ($notification->surat_id) {
+            $surat = $notification->surat;
+            if ($surat && $surat->recipient_division === $user->division && $surat->archived_at === null) {
+                $surat->update([
+                    'status' => $surat->status === 'Terkirim' ? 'Dibaca' : $surat->status,
+                    'read_at' => $surat->read_at ?? now(),
+                    'archived_at' => now(),
+                ]);
+            }
+        }
+
         return redirect()->route('surat.show', $notification->surat_id);
     }
 }

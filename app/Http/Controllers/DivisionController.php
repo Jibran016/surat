@@ -13,9 +13,7 @@ class DivisionController extends Controller
 {
     public function index()
     {
-        $divisions = Division::orderBy('name')->paginate(12);
-
-        return view('divisions.index', compact('divisions'));
+        return redirect()->route('divisions.create');
     }
 
     public function create()
@@ -27,11 +25,12 @@ class DivisionController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:80', 'unique:divisions,name'],
+            'unit_code' => ['required', 'string', 'max:10', 'regex:/^[0-9]+$/', 'unique:divisions,unit_code'],
         ]);
 
         Division::create($data);
 
-        return redirect()->route('divisions.index')->with('status', 'Divisi berhasil dibuat.');
+        return redirect()->route('divisions.create')->with('status', 'Divisi berhasil dibuat.');
     }
 
     public function edit(Division $division)
@@ -43,11 +42,12 @@ class DivisionController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:80', Rule::unique('divisions', 'name')->ignore($division->id)],
+            'unit_code' => ['required', 'string', 'max:10', 'regex:/^[0-9]+$/', Rule::unique('divisions', 'unit_code')->ignore($division->id)],
         ]);
 
         $division->update($data);
 
-        return redirect()->route('divisions.index')->with('status', 'Divisi berhasil diperbarui.');
+        return redirect()->route('divisions.create')->with('status', 'Divisi berhasil diperbarui.');
     }
 
     public function destroy(Division $division)
@@ -62,12 +62,12 @@ class DivisionController extends Controller
 
         if ($usedByUser || $usedBySurat || $usedByNotif) {
             return redirect()
-                ->route('divisions.index')
+                ->route('divisions.create')
                 ->with('status', 'Divisi tidak dapat dihapus karena masih digunakan.');
         }
 
         $division->delete();
 
-        return redirect()->route('divisions.index')->with('status', 'Divisi berhasil dihapus.');
+        return redirect()->route('divisions.create')->with('status', 'Divisi berhasil dihapus.');
     }
 }

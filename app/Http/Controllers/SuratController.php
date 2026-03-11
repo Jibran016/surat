@@ -8,15 +8,22 @@ use App\Models\Surat;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class SuratController extends Controller
 {
     public function create()
     {
         $user = Auth::user();
-        $divisions = Division::orderBy('name')->pluck('name');
+        $divisions = Division::query()
+            ->when(!empty($user->division), function ($query) use ($user) {
+                $query->where('name', '!=', $user->division);
+            })
+            ->orderBy('name')
+            ->pluck('name');
 
-        $jenisList = ['Memo', 'Permintaan', 'Laporan'];
+        $jenisList = ['Permintaan', 'Memorandum', 'Laporan'];
 
         return view('surat.create', compact('user', 'divisions', 'jenisList'));
     }
@@ -29,9 +36,14 @@ class SuratController extends Controller
             'jenis' => ['required', 'string'],
             'judul' => ['required', 'string', 'max:150'],
             'isi' => ['required', 'string'],
-            'lampiran' => ['nullable', 'file', 'max:10240'],
+            'lampiran' => ['nullable', 'file', 'mimes:jpg,jpeg,pdf', 'max:10240'],
             'recipient_divisions' => ['required', 'array', 'min:1'],
-            'recipient_divisions.*' => ['required', 'string', 'exists:divisions,name'],
+            'recipient_divisions.*' => [
+                'required',
+                'string',
+                'exists:divisions,name',
+                Rule::notIn(array_filter([$user->division])),
+            ],
         ]);
 
         $lampiranPath = null;
@@ -46,7 +58,7 @@ class SuratController extends Controller
             ->unique()
             ->values();
 
-        $now = now();
+        $now = now(config('app.timezone'));
         $sequence = $this->nextSequence($user->division, $now->format('Y'));
         $lastSurat = null;
 
@@ -81,7 +93,7 @@ class SuratController extends Controller
         $statusMessage = 'Surat terkirim ke ' . $recipients->count() . ' divisi.';
 
         return redirect()
-            ->route('surat.outbox')
+            ->route('dashboard')
             ->with('status', $statusMessage);
     }
 
@@ -89,12 +101,19 @@ class SuratController extends Controller
     {
         $user = Auth::user();
 
-        $surats = Surat::where('recipient_division', $user->division)
+        $unreadSurats = Surat::where('recipient_division', $user->division)
             ->whereNull('archived_at')
+            ->where('status', 'Terkirim')
             ->orderByDesc('sent_at')
             ->get();
 
-        return view('surat.inbox', compact('surats'));
+        $readSurats = Surat::where('recipient_division', $user->division)
+            ->whereNull('archived_at')
+            ->where('status', '!=', 'Terkirim')
+            ->orderByDesc('sent_at')
+            ->get();
+
+        return view('surat.inbox', compact('unreadSurats', 'readSurats'));
     }
 
     public function outbox()
@@ -103,6 +122,7 @@ class SuratController extends Controller
 
         $surats = Surat::where('sender_user_id', $user->id)
             ->whereNull('archived_at')
+            ->where('status', 'Terkirim')
             ->orderByDesc('sent_at')
             ->get();
 
@@ -112,31 +132,41 @@ class SuratController extends Controller
     public function archiveIndex()
     {
         $user = Auth::user();
+        $tipe = request()->query('tipe', 'all');
+        if (!in_array($tipe, ['all', 'masuk', 'keluar'], true)) {
+            $tipe = 'all';
+        }
 
-        $surats = Surat::where(function ($query) use ($user) {
-            $query->where('sender_user_id', $user->id)
-                ->orWhere('recipient_division', $user->division);
-        })->whereNotNull('archived_at')
-            ->orderByDesc('archived_at')
+        $surats = Surat::query()
+            ->where('recipient_division', $user->division)
+            ->whereNotNull('archived_at')
+            ->when($tipe === 'keluar', function ($query) use ($user) {
+                $query->where('sender_user_id', $user->id);
+            })
+            ->when($tipe === 'masuk', function ($query) use ($user) {
+                $query->where('sender_user_id', '!=', $user->id);
+            })
+            ->orderByDesc('sent_at')
             ->get();
 
-        return view('surat.archive', compact('surats'));
+        return view('surat.archive', compact('surats', 'tipe'));
     }
 
     public function show(Surat $surat)
     {
         $user = Auth::user();
         $this->authorizeAccess($surat, $user);
+        $isRecipient = $surat->recipient_division === $user->division;
 
-        if ($surat->recipient_division === $user->division && $surat->status === 'Terkirim') {
+        if ($isRecipient && $surat->archived_at === null) {
             $surat->update([
-                'status' => 'Dibaca',
-                'read_at' => now(),
+                'status' => $surat->status === 'Terkirim' ? 'Dibaca' : $surat->status,
+                'read_at' => $surat->read_at ?? now(),
+                'archived_at' => now(),
             ]);
         }
 
         $isSender = $surat->sender_user_id === $user->id;
-        $isRecipient = $surat->recipient_division === $user->division;
 
         return view('surat.show', compact('surat', 'isSender', 'isRecipient'));
     }
@@ -159,7 +189,33 @@ class SuratController extends Controller
 
         $filename = 'surat-' . $surat->id . '.pdf';
 
-        return $pdf->download($filename);
+        return $pdf->stream($filename);
+    }
+
+    public function attachment(Request $request, Surat $surat)
+    {
+        $user = Auth::user();
+        $this->authorizeAccess($surat, $user);
+
+        if (!$surat->lampiran_path || !Storage::disk('public')->exists($surat->lampiran_path)) {
+            abort(404, 'Lampiran tidak ditemukan.');
+        }
+
+        $path = Storage::disk('public')->path($surat->lampiran_path);
+        $mimeType = Storage::disk('public')->mimeType($surat->lampiran_path) ?: 'application/octet-stream';
+        $filename = $surat->lampiran_name ?: basename($surat->lampiran_path);
+        $safeFilename = str_replace('"', '', $filename);
+
+        if ($request->boolean('download')) {
+            return response()->download($path, $safeFilename, [
+                'Content-Type' => $mimeType,
+            ]);
+        }
+
+        return response()->file($path, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . $safeFilename . '"',
+        ]);
     }
 
     public function archive(Surat $surat)
@@ -203,7 +259,7 @@ class SuratController extends Controller
         $data = $request->validate([
             'judul' => ['required', 'string', 'max:150'],
             'isi' => ['required', 'string'],
-            'lampiran' => ['nullable', 'file', 'max:10240'],
+            'lampiran' => ['nullable', 'file', 'mimes:jpg,jpeg,pdf', 'max:10240'],
         ]);
 
         $lampiranPath = null;
@@ -213,7 +269,7 @@ class SuratController extends Controller
             $lampiranName = $request->file('lampiran')->getClientOriginalName();
         }
 
-        $now = now();
+        $now = now(config('app.timezone'));
         $sequence = $this->nextSequence($user->division, $now->format('Y'));
         $nomorSurat = $this->buildNomorSurat($user->division, $sequence, $now);
 
@@ -287,14 +343,23 @@ class SuratController extends Controller
 
     private function buildNomorSurat(string $division, int $sequence, \Illuminate\Support\Carbon $date): string
     {
-        $divisionCode = strtoupper(preg_replace('/[^A-Z0-9]/', '', $division));
-        if ($divisionCode === '') {
-            $divisionCode = 'DIV';
-        }
-
         $seq = str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
         $year = $date->format('Y');
+        $divisionCode = $this->buildDivisionCode($division);
 
-        return 'No.' . $seq . '/' . $divisionCode . '/' . $year . '-S0';
+        return 'No. ' . $seq . '/PAG' . $divisionCode . '/' . $year;
+    }
+
+    private function buildDivisionCode(?string $division): string
+    {
+        if (empty($division)) {
+            return '0000';
+        }
+
+        $code = Division::query()
+            ->where('name', $division)
+            ->value('unit_code');
+
+        return !empty($code) ? (string) $code : '0000';
     }
 }
