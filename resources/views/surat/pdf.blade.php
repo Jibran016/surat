@@ -85,9 +85,24 @@
             margin-top: 14px;
         }
 
-        .signature {
+        .footer-block {
+            width: 100%;
             margin-top: 18px;
-            width: 280px;
+            border-collapse: collapse;
+        }
+
+        .footer-block td {
+            vertical-align: top;
+        }
+
+        .tembusan-cell {
+            width: 52%;
+            padding-right: 18px;
+        }
+
+        .signature-cell {
+            width: 48%;
+            padding-left: 18px;
         }
 
         .signature-space {
@@ -144,6 +159,11 @@
             <td>{{ $surat->lampiran_name ? '1 berkas' : '-' }}</td>
         </tr>
         <tr>
+            <td class="label">Tanggal</td>
+            <td class="sep">:</td>
+            <td>{{ optional($surat->sent_at)?->timezone(config('app.timezone'))->translatedFormat('d F Y') ?? '-' }}</td>
+        </tr>
+        <tr>
             <td class="label">Perihal</td>
             <td class="sep">:</td>
             <td>{{ $surat->judul }}</td>
@@ -163,22 +183,25 @@
         Demikian surat ini kami sampaikan. Atas perhatian dan kerja samanya kami ucapkan terima kasih.
     </div>
 
-    <div class="signature">
-        <div>Hormat kami,</div>
-        <div class="signature-space"></div>
-        <div>(....................................)</div>
-        <div>{{ $surat->sender_division }}</div>
-    </div>
-
-    @if ($hasTembusan)
-        <div class="closing" style="margin-top: 18px;">
-            <div style="font-weight: bold;">Tembusan:</div>
-            <ol style="margin: 6px 0 0 18px; padding: 0;">
-                @foreach ($tembusanItems as $item)
-                    <li>{{ $item }}</li>
-                @endforeach
-            </ol>
-        </div>
-    @endif
+    <table class="footer-block">
+        <tr>
+            <td class="tembusan-cell">
+                <div style="font-weight: bold;">Tembusan:</div>
+                <ol style="margin: 6px 0 0 18px; padding: 0;">
+                    @forelse ($tembusanItems as $item)
+                        <li>{{ $item }}</li>
+                    @empty
+                        <li>-</li>
+                    @endforelse
+                </ol>
+            </td>
+            <td class="signature-cell">
+                <div>Hormat kami,</div>
+                <div class="signature-space"></div>
+                <div>(....................................)</div>
+                <div>{{ $surat->sender_division }}</div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

@@ -36,19 +36,11 @@ class DashboardController extends Controller
         ['labels' => $chartLabels, 'masuk' => $chartMasukData, 'keluar' => $chartKeluarData] = $this->buildChartData($user, $chartMode);
 
         if ($user->role === 'Admin') {
-            $divisionCodes = Division::query()
-                ->pluck('unit_code', 'name');
-
             $accountDivisionRows = User::query()
                 ->orderByRaw("CASE WHEN role = 'Admin' THEN 0 ELSE 1 END")
                 ->orderBy('division')
                 ->orderBy('username')
-                ->get(['id', 'username', 'email', 'role', 'division', 'created_at'])
-                ->map(function (User $row) use ($divisionCodes) {
-                    $row->division_code = $divisionCodes[$row->division] ?? '-';
-
-                    return $row;
-                });
+                ->get(['id', 'username', 'email', 'role', 'division', 'created_at']);
 
             return view('dashboard-admin', compact(
                 'masukCount',
@@ -168,14 +160,13 @@ class DashboardController extends Controller
 
         return Division::query()
             ->orderBy('name')
-            ->get(['name', 'unit_code'])
+            ->get(['name'])
             ->map(function (Division $division) use ($incomingByDivision, $outgoingByDivision) {
                 $masuk = (int) ($incomingByDivision[$division->name] ?? 0);
                 $keluar = (int) ($outgoingByDivision[$division->name] ?? 0);
 
                 return (object) [
                     'name' => $division->name,
-                    'unit_code' => $division->unit_code,
                     'masuk_count' => $masuk,
                     'keluar_count' => $keluar,
                     'total_count' => $masuk + $keluar,

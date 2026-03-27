@@ -25,7 +25,6 @@ class DivisionController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:80', 'unique:divisions,name'],
-            'unit_code' => ['required', 'string', 'max:10', 'regex:/^[0-9]+$/', 'unique:divisions,unit_code'],
         ]);
 
         Division::create($data);
@@ -42,7 +41,6 @@ class DivisionController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:80', Rule::unique('divisions', 'name')->ignore($division->id)],
-            'unit_code' => ['required', 'string', 'max:10', 'regex:/^[0-9]+$/', Rule::unique('divisions', 'unit_code')->ignore($division->id)],
         ]);
 
         $division->update($data);

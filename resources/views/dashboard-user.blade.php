@@ -16,7 +16,7 @@
             </a>
             <a href="{{ route('surat.create') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-pink-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-pink-700">
                 <i data-lucide="plus" class="h-4 w-4"></i>
-                Buat Surat
+                Kirim Surat
             </a>
         </div>
 

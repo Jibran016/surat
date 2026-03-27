@@ -49,7 +49,6 @@
                         <th class="px-4 py-3">Email</th>
                         <th class="px-4 py-3">Role</th>
                         <th class="px-4 py-3">Divisi</th>
-                        <th class="px-4 py-3">No. Divisi</th>
                         <th class="px-4 py-3">Terdaftar</th>
                         <th class="px-4 py-3 text-right">Aksi</th>
                     </tr>
@@ -61,7 +60,6 @@
                             <td class="px-4 py-3 text-slate-600">{{ $row->email ?? '-' }}</td>
                             <td class="px-4 py-3 text-slate-600">{{ $row->role }}</td>
                             <td class="px-4 py-3 text-slate-600">{{ $row->division ?? '-' }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $row->division_code }}</td>
                             <td class="px-4 py-3 text-slate-600">{{ optional($row->created_at)?->timezone(config('app.timezone'))->format('d M Y H:i') ?? '-' }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-2">
@@ -82,7 +80,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-4 text-sm text-slate-500">Belum ada data akun/divisi.</td>
+                            <td colspan="6" class="px-4 py-4 text-sm text-slate-500">Belum ada data akun/divisi.</td>
                         </tr>
                     @endforelse
                 </tbody>

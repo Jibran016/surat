@@ -8,7 +8,6 @@ use App\Models\Surat;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -108,138 +107,8 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // Seed surat agar setiap akun (divisi) memiliki surat masuk dan keluar dengan jumlah acak.
+        // Bersihkan data surat/notifikasi; surat dummy tidak lagi dibuat saat seeding.
         Notification::query()->delete();
         Surat::query()->delete();
-
-        $divisionCodes = Division::query()->pluck('unit_code', 'name');
-        $divisionNames = Division::query()->pluck('name')->values();
-        $usersWithDivision = User::query()->whereNotNull('division')->get();
-
-        $jenisList = [
-            'Permintaan',
-            'Memorandum',
-            'Laporan',
-            'P3K',
-            'Surat Tugas',
-            'Perizinan',
-            'Cuti',
-            'Pengadaan',
-            'K3/Insiden',
-            'Pengumuman',
-            'Undangan',
-            'Notulen',
-        ];
-        $judulList = [
-            'Permintaan data pendukung',
-            'Permohonan tindak lanjut',
-            'Laporan progres kegiatan',
-            'Informasi jadwal kerja',
-            'Permintaan konfirmasi',
-            'Koordinasi internal divisi',
-        ];
-        $isiList = [
-            'Dengan hormat, mohon dukungan data dan tindak lanjut sesuai kebutuhan divisi. Terima kasih.',
-            'Kami informasikan progres kegiatan terakhir dan mohon arahan lanjutan.',
-            'Mohon penjadwalan rapat koordinasi untuk pembahasan berikutnya.',
-            'Berikut laporan singkat hasil evaluasi minggu ini.',
-            'Mohon konfirmasi atas rencana kerja yang telah diajukan.',
-        ];
-
-        $sequenceByDivision = [];
-        $buildNomorSurat = function (string $division, \Illuminate\Support\Carbon $date) use (&$sequenceByDivision, $divisionCodes): string {
-            $sequenceByDivision[$division] = ($sequenceByDivision[$division] ?? 0) + 1;
-            $seq = str_pad((string) $sequenceByDivision[$division], 3, '0', STR_PAD_LEFT);
-            $year = $date->format('Y');
-            $code = $divisionCodes[$division] ?? '0000';
-
-            return 'No. ' . $seq . '/PAG' . $code . '/' . $year;
-        };
-
-        $makeSurat = function (User $sender, string $recipientDivision, ?string $statusOverride = null, bool $forceNotArchived = false) use (
-            $jenisList,
-            $judulList,
-            $isiList,
-            $buildNomorSurat
-        ): Surat {
-            $sentAt = now()->subDays(rand(1, 90))->subMinutes(rand(0, 600));
-            $status = $statusOverride ?? Arr::random(['Terkirim', 'Dibaca', 'Dibalas', 'Selesai']);
-
-            $readAt = null;
-            $repliedAt = null;
-            $completedAt = null;
-            $archivedAt = null;
-
-            if ($status !== 'Terkirim') {
-                $readAt = (clone $sentAt)->addHours(rand(1, 48));
-            }
-            if ($status === 'Dibalas') {
-                $repliedAt = (clone $readAt)->addHours(rand(1, 48));
-            }
-            if ($status === 'Selesai') {
-                $completedAt = (clone $readAt)->addHours(rand(1, 48));
-            }
-            if (!$forceNotArchived && rand(1, 10) <= 2) {
-                $archivedAt = (clone ($completedAt ?? $readAt ?? $sentAt))->addDays(rand(1, 30));
-            }
-
-            $surat = Surat::create([
-                'parent_id' => null,
-                'sender_user_id' => $sender->id,
-                'sender_division' => $sender->division,
-                'recipient_division' => $recipientDivision,
-                'nomor_surat' => $buildNomorSurat($sender->division, $sentAt),
-                'jenis' => Arr::random($jenisList),
-                'judul' => Arr::random($judulList),
-                'isi' => Arr::random($isiList),
-                'lampiran_path' => null,
-                'lampiran_name' => null,
-                'status' => $status,
-                'sent_at' => $sentAt,
-                'read_at' => $readAt,
-                'replied_at' => $repliedAt,
-                'completed_at' => $completedAt,
-                'archived_at' => $archivedAt,
-            ]);
-
-            Notification::create([
-                'surat_id' => $surat->id,
-                'recipient_division' => $surat->recipient_division,
-                'message' => 'Surat baru dari divisi ' . $surat->sender_division,
-                'read_at' => $status !== 'Terkirim' ? $readAt : null,
-            ]);
-
-            return $surat;
-        };
-
-        $minOutgoing = 2;
-        $maxOutgoing = 6;
-        $minIncoming = 2;
-        $maxIncoming = 6;
-
-        foreach ($usersWithDivision as $user) {
-            $outgoingTarget = rand($minOutgoing, $maxOutgoing);
-            $recipientPool = $divisionNames->filter(fn ($name) => $name !== $user->division)->values();
-
-            for ($i = 0; $i < $outgoingTarget; $i++) {
-                $recipientDivision = $recipientPool->random();
-                $forceTerkirim = $i === 0;
-                $status = $forceTerkirim ? 'Terkirim' : null;
-                $makeSurat($user, $recipientDivision, $status, true);
-            }
-        }
-
-        foreach ($usersWithDivision as $user) {
-            $targetIncoming = rand($minIncoming, $maxIncoming);
-            $incomingCount = Surat::query()
-                ->where('recipient_division', $user->division)
-                ->count();
-
-            while ($incomingCount < $targetIncoming) {
-                $sender = $usersWithDivision->where('id', '!=', $user->id)->random();
-                $makeSurat($sender, $user->division, null, true);
-                $incomingCount++;
-            }
-        }
     }
 }

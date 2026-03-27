@@ -60,7 +60,6 @@
             <thead class="bg-pink-50/60 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
                 <tr>
                     <th class="px-4 py-3">Divisi</th>
-                    <th class="px-4 py-3">No. Divisi</th>
                     <th class="px-4 py-3">Surat Masuk</th>
                     <th class="px-4 py-3">Surat Keluar</th>
                     <th class="px-4 py-3">Total</th>
@@ -70,14 +69,13 @@
                 @forelse ($divisionMonitoring ?? [] as $item)
                     <tr>
                         <td class="px-4 py-3 font-medium text-slate-800">{{ $item->name }}</td>
-                        <td class="px-4 py-3 text-slate-600">{{ $item->unit_code ?: '-' }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ $item->masuk_count }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ $item->keluar_count }}</td>
                         <td class="px-4 py-3 text-slate-600">{{ $item->total_count }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-4 text-sm text-slate-500">Belum ada data.</td>
+                        <td colspan="4" class="px-4 py-4 text-sm text-slate-500">Belum ada data.</td>
                     </tr>
                 @endforelse
             </tbody>

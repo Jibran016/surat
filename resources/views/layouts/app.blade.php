@@ -369,7 +369,7 @@
                                 <path d="M5 12h14"></path>
                             </svg>
                         </span>
-                        Buat Surat
+                        Kirim Surat
                     </a>
                     <a href="{{ route('surat.inbox') }}" class="flex items-center gap-2 rounded-2xl border border-emerald-200/60 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900/90 transition hover:bg-emerald-100/80">
                         <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-200/70 text-emerald-800">

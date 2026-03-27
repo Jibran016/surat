@@ -20,16 +20,6 @@
             @enderror
         </div>
 
-        <div>
-            <label for="unit_code" class="text-sm font-semibold text-slate-700">Nomor Divisi/Unit</label>
-            <input id="unit_code" name="unit_code" type="text" value="{{ old('unit_code') }}" required
-                class="mt-2 w-full rounded-2xl border border-pink-100 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm outline-none transition focus:border-pink-300 focus:ring-2 focus:ring-pink-200"
-                placeholder="Contoh: 1000">
-            @error('unit_code')
-                <div class="mt-2 text-sm text-rose-600">{{ $message }}</div>
-            @enderror
-        </div>
-
         <button class="inline-flex items-center gap-2 rounded-full bg-pink-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700" type="submit">
             Simpan
         </button>

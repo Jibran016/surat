@@ -32,13 +32,8 @@ class SuratController extends Controller
             'Surat Pemberitahuan',
             'Surat Pengantar',
         ];
-        $templateList = [
-            'Formal Divisi',
-            'Ringkas Operasional',
-            'Memo Internal',
-        ];
 
-        return view('surat.create', compact('user', 'divisions', 'jenisList', 'templateList'));
+        return view('surat.create', compact('user', 'divisions', 'jenisList'));
     }
 
     public function store(Request $request)
@@ -46,18 +41,10 @@ class SuratController extends Controller
         $user = Auth::user();
 
         $data = $request->validate([
-            'jenis' => ['required', 'string'],
-            'template_name' => ['required', 'string', 'max:60'],
+            'jenis' => ['nullable', 'string'],
             'judul' => ['required', 'string', 'max:150'],
-            'isi' => ['required', 'string'],
-            'tembusan' => ['nullable', 'array'],
-            'tembusan.*' => [
-                'required',
-                'string',
-                'exists:divisions,name',
-                Rule::notIn(array_filter([$user->division])),
-            ],
-            'lampiran' => ['nullable', 'file', 'mimes:jpg,jpeg,pdf', 'max:10240'],
+            'isi' => ['nullable', 'string'],
+            'lampiran' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar', 'max:20480'],
             'recipient_divisions' => ['required', 'array', 'min:1'],
             'recipient_divisions.*' => [
                 'required',
@@ -79,43 +66,37 @@ class SuratController extends Controller
             ->unique()
             ->values();
 
-        $tembusanList = collect($data['tembusan'] ?? [])
-            ->map(fn ($item) => trim((string) $item))
-            ->filter()
-            ->unique()
-            ->values()
-            ->all();
-
         $now = now(config('app.timezone'));
+        $sentAt = $now->copy();
         $sequence = $this->nextSequence($user->division, $now->format('Y'));
         $lastSurat = null;
+        $jenis = trim((string) ($data['jenis'] ?? ''));
+        $jenis = $jenis !== '' ? $jenis : 'Surat Pengantar';
+        $isiPesan = trim((string) ($data['isi'] ?? ''));
+        $isiHtml = $isiPesan !== ''
+            ? nl2br(e($isiPesan))
+            : '<p>Pesan dikirim dengan lampiran oleh divisi ' . e($user->division) . '.</p>';
 
         foreach ($recipients as $recipientDivision) {
-            $nomorSurat = $this->buildNomorSurat($user->division, $sequence, $now);
+            $nomorSurat = $this->buildNomorSurat($user->division, $sequence, $sentAt);
             $sequence++;
-            $displayTembusanList = $recipients
-                ->concat($tembusanList)
-                ->filter()
-                ->unique()
-                ->values()
-                ->all();
 
             $surat = Surat::create([
                 'parent_id' => null,
                 'sender_user_id' => $user->id,
                 'sender_division' => $user->division,
                 'recipient_division' => $recipientDivision,
-                'cc_divisions' => $tembusanList,
-                'tembusan_list' => $displayTembusanList,
+                'cc_divisions' => [],
+                'tembusan_list' => [$recipientDivision],
                 'nomor_surat' => $nomorSurat,
-                'jenis' => $data['jenis'],
-                'template_name' => $data['template_name'],
+                'jenis' => $jenis,
+                'template_name' => null,
                 'judul' => $data['judul'],
-                'isi' => $data['isi'],
+                'isi' => $isiHtml,
                 'lampiran_path' => $lampiranPath,
                 'lampiran_name' => $lampiranName,
                 'status' => 'Terkirim',
-                'sent_at' => $now,
+                'sent_at' => $sentAt,
             ]);
 
             Notification::create([
@@ -161,7 +142,36 @@ class SuratController extends Controller
             ->orderByDesc('sent_at')
             ->get();
 
-        return view('surat.outbox', compact('surats'));
+        $outboxGroups = $surats
+            ->groupBy(function (Surat $surat) {
+                return md5(implode('|', [
+                    $surat->sender_user_id,
+                    $surat->jenis,
+                    $surat->judul,
+                    trim(strip_tags((string) $surat->isi)),
+                    $surat->lampiran_path ?? '',
+                    $surat->lampiran_name ?? '',
+                    optional($surat->sent_at)?->format('Y-m-d H:i:s') ?? '',
+                ]));
+            })
+            ->map(function ($items) {
+                $first = $items->first();
+                $recipients = $items
+                    ->pluck('recipient_division')
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                return (object) [
+                    'surat' => $first,
+                    'recipient_divisions' => $recipients,
+                    'recipient_summary' => $recipients->implode(', ') !== '' ? $recipients->implode(', ') : '-',
+                    'recipient_count' => $recipients->count(),
+                ];
+            })
+            ->values();
+
+        return view('surat.outbox', compact('outboxGroups'));
     }
 
     public function archiveIndex()
