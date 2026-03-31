@@ -1,65 +1,274 @@
 @extends('layouts.app')
 
-@section('title', 'Login - SURATIN')
+@section('title', 'Login - Surat Menyurat')
+
+@push('styles')
+<style>
+    .login-page {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background:
+            radial-gradient(circle at 12% 14%, rgba(15, 95, 174, 0.2) 0, rgba(15, 95, 174, 0) 34%),
+            radial-gradient(circle at 86% 86%, rgba(21, 128, 61, 0.16) 0, rgba(21, 128, 61, 0) 34%),
+            linear-gradient(150deg, #edf3f9 0%, #f7fafd 100%);
+        padding: 1.5rem;
+    }
+
+    .login-shell {
+        width: min(980px, 100%);
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        border: 1px solid #d5e0ec;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 36px 70px -42px rgba(15, 33, 55, 0.42);
+    }
+
+    .login-info {
+        padding: 2rem;
+        background: linear-gradient(171deg, #0a2d53 0%, #0f5fae 62%, #0e4f8e 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .brand-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .brand-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(140deg, #f97316, #ef4444 44%, #f59e0b);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 16px 24px -18px rgba(239, 68, 68, 0.9);
+    }
+
+    .brand-name {
+        font-size: 1.8rem;
+        line-height: 1.15;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: #ffffff;
+    }
+
+    .brand-sub {
+        margin-top: 0.15rem;
+        font-size: 0.78rem;
+        letter-spacing: 0.03em;
+        color: rgba(255, 255, 255, 0.76);
+    }
+
+    .login-copy {
+        margin-top: 2.2rem;
+    }
+
+    .login-copy h2 {
+        margin: 0;
+        font-size: 1.85rem;
+        line-height: 1.24;
+        color: #ffffff;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    .login-copy p {
+        margin-top: 0.7rem;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.92rem;
+        line-height: 1.65;
+        max-width: 44ch;
+    }
+
+    .chip-row {
+        margin-top: 1.1rem;
+        display: flex;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+    }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        background: rgba(255, 255, 255, 0.14);
+        color: #ffffff;
+        padding: 0.22rem 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .login-form-wrap {
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .login-form {
+        width: 100%;
+    }
+
+    .form-title {
+        margin: 0;
+        font-size: 1.45rem;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        color: #0f2137;
+        font-weight: 700;
+    }
+
+    .form-sub {
+        margin-top: 0.25rem;
+        color: #60758d;
+        font-size: 0.88rem;
+        line-height: 1.55;
+    }
+
+    .field {
+        margin-top: 1rem;
+    }
+
+    .label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.45rem;
+        font-size: 0.82rem;
+        letter-spacing: 0.01em;
+        color: #0f172a;
+        font-weight: 600;
+    }
+
+    .input {
+        width: 100%;
+        height: 46px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 0 0.8rem;
+        font-size: 0.9rem;
+        color: #334155;
+        background: #fff;
+        outline: none;
+        line-height: 1.45;
+    }
+
+    .input:focus {
+        border-color: #8fb3d8;
+        box-shadow: 0 0 0 2px rgba(15, 95, 174, 0.14);
+    }
+
+    .error {
+        margin-top: 0.35rem;
+        color: #dc2626;
+        font-size: 0.82rem;
+    }
+
+    .submit-btn {
+        margin-top: 1.2rem;
+        width: 100%;
+        height: 46px;
+        border: 1px solid #0f5fae;
+        background: #0f5fae;
+        color: #fff;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        letter-spacing: 0.01em;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        cursor: pointer;
+    }
+
+    .submit-btn:hover {
+        background: #0b4f92;
+    }
+
+    @media (max-width: 920px) {
+        .login-shell {
+            grid-template-columns: 1fr;
+        }
+
+        .login-info {
+            border-right: 0;
+            border-bottom: 1px solid #d5e0ec;
+        }
+    }
+</style>
+@endpush
 
 @section('content')
-<div class="h-screen overflow-hidden">
-    <div class="grid h-screen lg:grid-cols-[1.2fr_0.8fr]">
-        <div class="flex items-center justify-center bg-emerald-50/20 px-6 py-10 sm:px-10 lg:px-16">
-            <div class="max-w-xl text-center">
-                <div class="flex flex-col items-center gap-4">
-                    <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-pink-600 text-white shadow-lg">
-                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                            <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v9A2.5 2.5 0 0 1 17.5 18h-11A2.5 2.5 0 0 1 4 15.5v-9z"></path>
-                            <path d="m5 7 7 5 7-5"></path>
+<div class="login-page">
+    <div class="login-shell">
+        <section class="login-info">
+            <div>
+                <div class="brand-row">
+                    <span class="brand-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                            <path d="m3 7 9 6 9-6"></path>
                         </svg>
-                    </div>
+                    </span>
                     <div>
-                        <div class="text-3xl font-semibold text-slate-900">SURATIN</div>
-                        <div class="text-sm font-medium text-pink-700">Sistem Surat Internal</div>
+                        <div class="brand-name">SURATIN</div>
+                        <div class="brand-sub">Sistem Internal</div>
                     </div>
                 </div>
-                <p class="mt-4 text-base text-slate-600">
-                    Kelola surat masuk dan keluar antar divisi dengan cepat, rapi, dan aman.
-                </p>
-            </div>
-        </div>
 
-        <div class="flex items-stretch">
-            <div class="flex w-full flex-col justify-center border-l border-emerald-600/25 bg-emerald-600/45 px-8 py-10 shadow-[0_30px_60px_-40px_rgba(20,83,45,0.22)] sm:px-10 lg:px-12">
-                <div class="mx-auto w-full max-w-md">
-                    <div class="mb-6 text-center">
-                        <h1 class="text-2xl font-semibold text-emerald-950">Masuk</h1>
-                        <p class="mt-2 text-sm text-emerald-900/85">Gunakan email dan password akun Anda.</p>
-                    </div>
-
-                    <form method="POST" action="{{ route('login.submit') }}" class="space-y-5">
-                        @csrf
-                        <div>
-                        <label for="email" class="text-sm font-semibold text-emerald-950">Email</label>
-                        <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus
-                            class="mt-2 w-full rounded-2xl border border-emerald-700/25 bg-white/82 px-4 py-3 text-sm text-emerald-950 shadow-sm outline-none transition placeholder:text-emerald-900/45 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-400/30">
-                        @error('email')
-                            <div class="mt-2 text-sm text-rose-700">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="password" class="text-sm font-semibold text-emerald-950">Password</label>
-                        <input id="password" name="password" type="password" required
-                            class="mt-2 w-full rounded-2xl border border-emerald-700/25 bg-white/82 px-4 py-3 text-sm text-emerald-950 shadow-sm outline-none transition placeholder:text-emerald-900/45 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-400/30">
-                        @error('password')
-                            <div class="mt-2 text-sm text-rose-700">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <button class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-rose-400/80 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-500/90" type="submit">
-                        Masuk
-                    </button>
-                    </form>
+                <div class="login-copy">
+                    <h2>Kelola surat divisi lebih rapi</h2>
+                    <p>Masuk ke sistem untuk memproses surat masuk, surat keluar, dan arsip dengan alur yang terpusat.</p>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <section class="login-form-wrap">
+            <form method="POST" action="{{ route('login.submit') }}" class="login-form">
+                @csrf
+
+                <h1 class="form-title">Masuk Akun</h1>
+                <p class="form-sub">Gunakan email dan password akun Anda.</p>
+
+                <div class="field">
+                    <label class="label" for="email">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+                        Email
+                    </label>
+                    <input id="email" name="email" type="email" class="input" value="{{ old('email') }}" required autofocus>
+                    @error('email')
+                        <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="field">
+                    <label class="label" for="password">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Password
+                    </label>
+                    <input id="password" name="password" type="password" class="input" required>
+                    @error('password')
+                        <div class="error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    Masuk
+                </button>
+            </form>
+        </section>
     </div>
 </div>
 @endsection

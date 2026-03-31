@@ -1,13 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'SURATIN')</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='white'/%3E%3Crect x='6' y='6' width='52' height='52' rx='12' fill='%2316a34a'/%3E%3Cpath d='M16 22h32v20H16z' fill='white'/%3E%3Cpath d='M16 22l16 12 16-12' fill='none' stroke='%23ef4444' stroke-width='3'/%3E%3C/svg%3E">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700" rel="stylesheet" />
-
+    <title>@yield('title', 'Surat Menyurat')</title>
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
@@ -15,508 +11,539 @@
     @endif
     <style>
         :root {
-            --accent-primary: #16a34a;
-            --accent-primary-dark: #15803d;
-            --accent-soft: rgba(22, 163, 74, 0.12);
-            --accent-soft-strong: rgba(22, 163, 74, 0.2);
-            --accent-success: #16a34a;
-            --accent-success-soft: rgba(22, 163, 74, 0.12);
-            --accent-danger: #ef4444;
-            --accent-danger-soft: rgba(239, 68, 68, 0.12);
-            --tri-red-soft: rgba(239, 68, 68, 0.08);
-            --tri-green-soft: rgba(22, 163, 74, 0.08);
-            --surface: #ffffff;
-            --surface-soft: #f8fafc;
-            --surface-tint: #f8fafc;
-            --text-main: #0f172a;
-            --text-muted: #5b6b7c;
-            --border-soft: rgba(15, 23, 42, 0.12);
+            --bg-app: #eef3f8;
+            --bg-surface: #ffffff;
+            --bg-soft: #f4f8fc;
+            --line: #d6e0eb;
+            --line-strong: #c1d1e3;
+            --text-main: #0f2137;
+            --text-muted: #61758c;
+            --brand: #0f5fae;
+            --brand-strong: #0b4f92;
+            --brand-soft: #e1edf8;
+            --success: #15803d;
         }
 
         body {
+            margin: 0;
+            font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
             color: var(--text-main);
+            line-height: 1.5;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             background:
-                radial-gradient(circle at 10% 16%, rgba(22, 163, 74, 0.16) 0 60px, transparent 88px),
-                radial-gradient(circle at 22% 40%, rgba(239, 68, 68, 0.12) 0 90px, transparent 126px),
-                radial-gradient(circle at 38% 18%, rgba(22, 163, 74, 0.1) 0 120px, transparent 160px),
-                radial-gradient(circle at 62% 12%, rgba(239, 68, 68, 0.14) 0 70px, transparent 108px),
-                radial-gradient(circle at 80% 26%, rgba(22, 163, 74, 0.12) 0 110px, transparent 150px),
-                radial-gradient(circle at 16% 72%, rgba(239, 68, 68, 0.1) 0 140px, transparent 185px),
-                radial-gradient(circle at 44% 78%, rgba(22, 163, 74, 0.14) 0 80px, transparent 120px),
-                radial-gradient(circle at 70% 70%, rgba(239, 68, 68, 0.12) 0 130px, transparent 178px),
-                radial-gradient(circle at 86% 88%, rgba(22, 163, 74, 0.1) 0 95px, transparent 140px),
-                radial-gradient(circle at 6% 88%, rgba(239, 68, 68, 0.08) 0 110px, transparent 160px),
-                #ffffff;
+                radial-gradient(circle at 3% 6%, rgba(15, 95, 174, 0.18) 0, rgba(15, 95, 174, 0) 34%),
+                radial-gradient(circle at 97% 100%, rgba(21, 128, 61, 0.14) 0, rgba(21, 128, 61, 0) 30%),
+                linear-gradient(165deg, #edf3f9 0%, #f6f9fd 100%);
         }
 
-        .bg-white,
-        .bg-white\/90,
-        .bg-white\/80,
-        .bg-white\/78 {
-            background-color: var(--surface) !important;
-            background-image: none !important;
+        h1, h2, h3, h4 {
+            letter-spacing: -0.01em;
+            line-height: 1.25;
         }
 
-        .text-slate-900,
-        .text-slate-800,
-        .text-slate-700,
-        .text-slate-600 {
-            color: var(--text-main) !important;
+        p {
+            line-height: 1.65;
         }
 
-        .text-slate-500,
-        .text-slate-400 {
-            color: var(--text-muted) !important;
+        .app-shell {
+            min-height: calc(100vh - 70px);
+            display: grid;
+            grid-template-columns: 240px 1fr;
         }
 
-        .text-pink-600,
-        .text-pink-700,
-        .text-pink-800 {
-            color: var(--accent-primary) !important;
+        .app-shell.admin-layout {
+            grid-template-columns: 1fr;
         }
 
-        .border-pink-100,
-        .border-pink-100\/70,
-        .border-pink-200 {
-            border-color: var(--border-soft) !important;
+        .app-sidebar {
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(172deg, #0a2d53 0%, #0f5fae 66%, #0f4c88 100%);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.08);
         }
 
-        .bg-pink-50,
-        .bg-pink-50\/60,
-        .bg-pink-100,
-        .bg-pink-100\/35,
-        .bg-pink-50\/60 {
-            background-color: var(--accent-soft) !important;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .bg-rose-100,
-        .bg-rose-200,
-        .bg-rose-100\/35,
-        .bg-rose-100\/45 {
-            background-color: var(--accent-danger-soft) !important;
+        .brand-mark {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(140deg, #f97316, #ef4444 45%, #f59e0b);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 14px 22px -16px rgba(239, 68, 68, 0.9);
         }
 
-        .bg-rose-50,
-        .bg-rose-50\/60 {
-            background-color: var(--tri-red-soft) !important;
+        .brand-title {
+            font-size: 1.42rem;
+            line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            color: #ffffff;
         }
 
-        .bg-black\/20,
-        .bg-black\/25,
-        .bg-black\/30,
-        .bg-black\/35,
-        .bg-black\/40,
-        .bg-black\/45 {
-            background-color: rgba(15, 23, 42, 0.04) !important;
+        .brand-subtitle {
+            margin-top: 2px;
+            font-size: 0.72rem;
+            letter-spacing: 0.02em;
+            color: rgba(255, 255, 255, 0.78);
         }
 
-        .text-pink-100,
-        .text-pink-200,
-        .text-pink-100\/80,
-        .text-pink-100\/70,
-        .text-pink-100\/60,
-        .text-pink-100\/45 {
-            color: var(--accent-primary) !important;
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
 
-        .text-rose-600,
-        .text-rose-700,
-        .text-rose-800 {
-            color: var(--accent-danger) !important;
-        }
-
-        .border-rose-200 {
-            border-color: rgba(239, 68, 68, 0.28) !important;
-        }
-
-        .bg-rose-500 {
-            background-color: var(--accent-danger) !important;
-        }
-
-        .bg-fuchsia-100,
-        .bg-fuchsia-500\/20 {
-            background-color: var(--accent-danger-soft) !important;
-        }
-
-        .text-fuchsia-600,
-        .text-fuchsia-700 {
-            color: var(--accent-danger) !important;
-        }
-
-        .shadow-pink-500\/30 {
-            --tw-shadow-color: rgba(22, 163, 74, 0.35) !important;
-        }
-
-        .shadow-\[0_30px_60px_-40px_rgba\(236\,72\,153\,0\.45\)\] {
-            box-shadow: 0 30px 60px -40px rgba(22, 163, 74, 0.28) !important;
-        }
-
-        .shadow-\[0_26px_50px_-40px_rgba\(236\,72\,153\,0\.45\)\] {
-            box-shadow: 0 26px 50px -40px rgba(22, 163, 74, 0.26) !important;
-        }
-
-        .text-emerald-600,
-        .text-emerald-700,
-        .text-emerald-800 {
-            color: var(--accent-success) !important;
-        }
-
-        .bg-emerald-50,
-        .bg-emerald-100 {
-            background-color: var(--accent-success-soft) !important;
-        }
-
-        .border-emerald-200 {
-            border-color: rgba(22, 163, 74, 0.28) !important;
-        }
-
-        .bg-pink-500\/20,
-        .bg-pink-500\/15,
-        .bg-pink-500\/30,
-        .bg-pink-500\/45 {
-            background-color: var(--accent-soft) !important;
-        }
-
-        .bg-pink-500 {
-            background-color: var(--accent-primary) !important;
-        }
-
-        .bg-pink-600 {
-            background-color: var(--accent-primary) !important;
-            color: #ffffff !important;
-            box-shadow: 0 10px 30px -12px rgba(37, 99, 235, 0.35) !important;
-        }
-
-        .hover\:bg-pink-700:hover {
-            background-color: var(--accent-primary-dark) !important;
-        }
-
-        .from-pink-500,
-        .from-pink-600 {
-            --tw-gradient-from: var(--accent-primary) !important;
-        }
-
-        .via-rose-500 {
-            --tw-gradient-stops: var(--accent-primary), var(--accent-success), var(--accent-danger) !important;
-        }
-
-        .to-rose-500,
-        .to-rose-600 {
-            --tw-gradient-to: var(--accent-danger) !important;
-        }
-
-        .from-rose-50 {
-            --tw-gradient-from: var(--tri-red-soft) !important;
-        }
-
-        .via-pink-50 {
-            --tw-gradient-stops: var(--tri-red-soft), var(--tri-blue-soft), var(--tri-green-soft) !important;
-        }
-
-        .to-white {
-            --tw-gradient-to: #ffffff !important;
-        }
-
-        .brand-chip {
-            border-radius: 999px;
-            padding: 0.125rem 0.5rem;
-            font-size: 0.7rem;
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.86);
+            text-decoration: none;
             font-weight: 600;
+            font-size: 0.91rem;
+            line-height: 1.35;
+            border: 1px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .menu-item.active {
+            background: #ffffff;
+            color: var(--brand-strong);
+            box-shadow: 0 14px 24px -16px rgba(3, 26, 49, 0.95);
+        }
+
+        .menu-item svg {
+            flex: 0 0 auto;
+        }
+
+        .app-main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 70px;
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(95deg, #ffffff 0%, #f4f8fc 86%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.25rem;
+            padding: 0 1.5rem;
+            position: relative;
+            backdrop-filter: blur(6px);
+        }
+
+        .topbar::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ef4444 0%, #0f5fae 56%, #15803d 100%);
+        }
+
+        .topbar-left {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .topbar .brand-title {
             color: #0f172a;
-            background: linear-gradient(90deg, var(--tri-green-soft), var(--tri-red-soft), var(--tri-green-soft));
+            font-size: 1.08rem;
         }
 
-        .from-pink-500.to-rose-500,
-        .from-pink-600.to-rose-600 {
-            background-image: none !important;
-            background-color: var(--accent-primary) !important;
+        .topbar .brand-subtitle {
+            color: #64748b;
         }
 
-        .shadow-sm,
-        .shadow-lg {
-            box-shadow: 0 16px 34px -24px rgba(37, 99, 235, 0.2) !important;
+        .topbar-right {
+            display: inline-flex;
+            align-items: center;
+            gap: 1.1rem;
         }
 
-        select {
-            background: var(--surface) !important;
-            border-color: rgba(37, 99, 235, 0.22) !important;
-            color: var(--text-main) !important;
+        .topbar-division {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.84rem;
+            color: #334155;
+            font-weight: 600;
         }
 
-        select:focus {
-            border-color: rgba(37, 99, 235, 0.6) !important;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18) !important;
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
-        select option {
-            background: #0f172a;
-            color: #f8fafc;
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(140deg, #0f5fae, #1c76cb 52%, #159a62);
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
         }
 
-        .prose {
-            color: var(--text-main);
+        .page {
+            padding: 1.75rem;
         }
 
-        @media (min-width: 1024px) {
-            main[data-app-main] {
-                transition: padding-left 220ms ease;
-            }
-
-            body.sidebar-open main[data-app-main] {
-                padding-left: 19rem;
-            }
-
-            body.sidebar-static main[data-app-main] {
-                padding-left: 19rem;
-            }
+        .page > *:first-child {
+            animation: page-enter 220ms ease-out;
         }
 
-        @media (prefers-reduced-motion: no-preference) {
-            body.page-enter main[data-app-main] {
+        @keyframes page-enter {
+            from {
                 opacity: 0;
-                transform: translateY(6px);
+                transform: translateY(8px);
             }
-
-            body.page-enter-active main[data-app-main] {
+            to {
                 opacity: 1;
                 transform: translateY(0);
-                transition: opacity 220ms ease, transform 220ms ease;
-            }
-
-            body.page-leave main[data-app-main] {
-                opacity: 0;
-                transform: translateY(4px);
-                transition: opacity 170ms ease, transform 170ms ease;
             }
         }
 
-        body.dashboard-full main[data-app-main] {
-            padding-top: 1.25rem;
-            padding-bottom: 1.25rem;
-            max-width: 86rem;
+        .alert-ok {
+            border: 1px solid #bde3cb;
+            background: #edf8f1;
+            color: #145a38;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-size: 0.88rem;
+            line-height: 1.55;
         }
 
-        @media (min-width: 1024px) {
-            body.dashboard-full main[data-app-main] {
-                padding-top: 1rem;
-                padding-bottom: 1rem;
+        .account-menu {
+            position: relative;
+        }
+
+        .account-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid transparent;
+            background: transparent;
+            padding: 0.2rem 0.3rem;
+            border-radius: 999px;
+            cursor: pointer;
+            color: #0f172a;
+        }
+
+        .account-trigger:hover {
+            background: #f1f6fb;
+            border-color: #d3deea;
+        }
+
+        .account-dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.5rem);
+            width: 190px;
+            border: 1px solid #d4e0ed;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 26px 42px -28px rgba(15, 33, 55, 0.45);
+            padding: 0.35rem;
+            display: none;
+            z-index: 50;
+        }
+
+        .account-dropdown.open {
+            display: block;
+        }
+
+        .account-item {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.5rem 0.65rem;
+            border-radius: 8px;
+            color: #334155;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .account-item:hover {
+            background: #edf3fa;
+        }
+
+        .account-item.danger {
+            color: #b91c1c;
+        }
+
+        .account-item.danger:hover {
+            background: #fef2f2;
+        }
+
+        .page .rounded-xl.border,
+        .page .rounded-2xl.border,
+        .page .rounded-3xl.border,
+        .page .panel,
+        .page .outbox-wrap,
+        .page .archive-wrap,
+        .page .compose-wrap .card {
+            border-color: var(--line) !important;
+            box-shadow: 0 22px 42px -34px rgba(15, 33, 55, 0.42);
+        }
+
+        .page table thead {
+            background: #f2f7fc !important;
+        }
+
+        .page table th {
+            font-size: 0.74rem;
+            letter-spacing: 0.03em;
+            line-height: 1.35;
+        }
+
+        .page table td {
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .page table tbody tr:hover {
+            background: #f8fbff;
+        }
+
+        .page input,
+        .page select,
+        .page textarea {
+            border-color: var(--line-strong) !important;
+        }
+
+        .page input:focus,
+        .page select:focus,
+        .page textarea:focus {
+            border-color: #8fb3d8 !important;
+            box-shadow: 0 0 0 2px rgba(15, 95, 174, 0.12) !important;
+        }
+
+        .page .bg-blue-600,
+        .page .bg-blue-700,
+        .page .bg-slate-900 {
+            background-color: var(--brand) !important;
+        }
+
+        .page .hover\:bg-blue-700:hover,
+        .page .hover\:bg-blue-800:hover,
+        .page .hover\:bg-slate-800:hover {
+            background-color: var(--brand-strong) !important;
+        }
+
+        @media (max-width: 980px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .app-sidebar {
+                border-right: 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .page {
+                padding: 1rem;
             }
         }
     </style>
-
     @stack('styles')
 </head>
-<body class="relative min-h-screen overflow-x-hidden {{ request()->routeIs('login') ? 'overflow-hidden' : '' }} {{ auth()->check() && auth()->user()->role !== 'Admin' ? 'sidebar-static' : '' }} bg-rose-50 text-slate-800 page-enter {{ request()->routeIs('dashboard') ? 'dashboard-full' : '' }}" style="font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;">
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <div class="absolute -left-8 top-10 hidden h-36 w-36 rounded-full border border-pink-200/70 lg:block" style="background-color: rgba(22, 163, 74, 0.08);"></div>
-        <div class="absolute left-[14%] top-[22%] hidden h-20 w-20 rounded-full border border-pink-200/60 lg:block" style="background-color: rgba(239, 68, 68, 0.08);"></div>
-        <div class="absolute left-[34%] top-[10%] hidden h-14 w-14 rounded-full border border-pink-200/60 lg:block" style="background-color: rgba(22, 163, 74, 0.06);"></div>
-        <div class="absolute right-[10%] top-[16%] hidden h-32 w-32 rounded-full border border-pink-200/70 lg:block" style="background-color: rgba(22, 163, 74, 0.08);"></div>
-        <div class="absolute right-[22%] top-[36%] hidden h-16 w-16 rounded-full border border-pink-200/60 lg:block" style="background-color: rgba(239, 68, 68, 0.07);"></div>
-        <div class="absolute right-[18%] bottom-[12%] hidden h-24 w-24 rounded-full border border-pink-200/60 lg:block" style="background-color: rgba(239, 68, 68, 0.08);"></div>
-        <div class="absolute left-[8%] bottom-[16%] hidden h-28 w-28 rounded-full border border-pink-200/60 lg:block" style="background-color: rgba(22, 163, 74, 0.07);"></div>
-        <div class="absolute left-[46%] bottom-[10%] hidden h-18 w-18 rounded-full border border-pink-200/60 lg:block" style="background-color: rgba(239, 68, 68, 0.06);"></div>
-    </div>
-
+<body>
     @auth
-        @if (!request()->routeIs('login'))
-        @if (auth()->user()->role !== 'Admin')
-            <aside class="fixed left-0 top-0 z-50 flex h-screen w-[290px] flex-col overflow-hidden border-r border-pink-200/40 bg-white/95 p-3 shadow-[0_24px_50px_-36px_rgba(11,94,215,0.35)] backdrop-blur" data-sidebar-panel>
-                <div class="mb-3 flex items-center justify-between">
-                    <div class="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-emerald-700">Menu</div>
-                    <div class="h-8 w-8"></div>
+        @php
+            $user = auth()->user();
+            $isAdmin = $user->role === 'Admin';
+            $initial = strtoupper(substr($user->username ?? 'U', 0, 1));
+        @endphp
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="brand-mark">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                        <path d="m3 7 9 6 9-6"></path>
+                    </svg>
                 </div>
-
-                <div class="rounded-2xl border border-emerald-200/70 bg-emerald-50/70 p-3">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-600 text-white shadow-sm">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9z"></path>
-                                <path d="m5 7 7 5 7-5"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="text-base font-semibold text-emerald-950">SURATIN</div>
-                            <div class="text-[0.65rem] font-medium text-emerald-800">Sistem Surat Internal</div>
-                        </div>
-                    </a>
+                <div>
+                    <div class="brand-title">SURATIN</div>
+                    <div class="brand-subtitle">Sistem Surat Internal</div>
                 </div>
-
-                <nav class="mt-4 flex-1 space-y-1.5">
-                    <a href="{{ route('users.profile') }}" class="flex items-center gap-2 rounded-2xl border border-emerald-200/70 bg-emerald-100/70 px-3 py-2 text-xs font-semibold text-emerald-900">
-                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-200/80 text-emerald-800">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </span>
-                        Profile
-                    </a>
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 rounded-2xl border border-emerald-200/60 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900/90 transition hover:bg-emerald-100/80">
-                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-200/70 text-emerald-800">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <path d="M3 11l9-7 9 7"></path>
-                                <path d="M5 10v9h14v-9"></path>
-                            </svg>
-                        </span>
-                        Dashboard
-                    </a>
-                    <div class="my-1 border-t border-emerald-200/70"></div>
-                    <a href="{{ route('surat.create') }}" class="flex items-center gap-2 rounded-2xl border border-emerald-200/60 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900/90 transition hover:bg-emerald-100/80">
-                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-200/70 text-emerald-800">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <path d="M12 5v14"></path>
-                                <path d="M5 12h14"></path>
-                            </svg>
-                        </span>
-                        Kirim Surat
-                    </a>
-                    <a href="{{ route('surat.inbox') }}" class="flex items-center gap-2 rounded-2xl border border-emerald-200/60 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900/90 transition hover:bg-emerald-100/80">
-                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-200/70 text-emerald-800">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <path d="M4 4h16v10H8l-4 4z"></path>
-                                <path d="M8 9h8"></path>
-                            </svg>
-                        </span>
-                        Surat Masuk
-                    </a>
-                    <a href="{{ route('surat.outbox') }}" class="flex items-center gap-2 rounded-2xl border border-emerald-200/60 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900/90 transition hover:bg-emerald-100/80">
-                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-200/70 text-emerald-800">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <path d="M4 12l16-8-6 16-3-6-7-2z"></path>
-                            </svg>
-                        </span>
-                        Surat Keluar
-                    </a>
-                </nav>
-
-                <div class="mt-4 rounded-2xl border border-emerald-200/60 bg-emerald-50/60 p-3">
-                    <div class="text-[0.65rem] font-semibold uppercase tracking-wider text-emerald-700">Ringkas</div>
-                    <div class="mt-2 space-y-1.5 text-[0.65rem] text-emerald-800/80">
-                        <div class="flex items-center justify-between">
-                            <span>Surat Masuk</span>
-                            <span class="font-semibold text-emerald-900">{{ $sidebarMasukCount ?? 0 }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span>Surat Keluar</span>
-                            <span class="font-semibold text-emerald-900">{{ $sidebarKeluarCount ?? 0 }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span>Arsip</span>
-                            <span class="font-semibold text-emerald-900">{{ $sidebarArsipCount ?? 0 }}</span>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-division">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M3 21h18"></path>
+                        <path d="M5 21V7l7-4 7 4v14"></path>
+                        <path d="M9 10h.01M15 10h.01M9 14h.01M15 14h.01"></path>
+                    </svg>
+                    {{ $user->division ?? 'Tanpa Divisi' }}
+                </div>
+                <div class="topbar-user">
+                    <div class="account-menu" data-account-menu>
+                        <button type="button" class="account-trigger" data-account-trigger aria-expanded="false" aria-haspopup="true">
+                            <span class="avatar">{{ $initial }}</span>
+                            <span class="inline-flex items-center gap-1.5">
+                                {{ $user->username }}
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="m6 9 6 6 6-6"></path>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="account-dropdown" data-account-dropdown>
+                            <a href="{{ route('users.profile') }}" class="account-item">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                Profile
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="account-item danger">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path d="m9 21-7-9 7-9"></path>
+                                        <path d="M22 12H3"></path>
+                                    </svg>
+                                    Logout
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
+            </div>
+        </header>
 
-                <div class="mt-3">
-                    <a href="{{ route('logout') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-rose-600">
-                        Logout
-                    </a>
-                </div>
-            </aside>
-        @endif
-        @endif
+        <div class="app-shell {{ $isAdmin ? 'admin-layout' : '' }}">
+            @if (!$isAdmin)
+                <aside class="app-sidebar">
+                    <nav class="menu">
+                        <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M3 3h7v7H3z"></path>
+                                <path d="M14 3h7v7h-7z"></path>
+                                <path d="M14 14h7v7h-7z"></path>
+                                <path d="M3 14h7v7H3z"></path>
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="{{ route('surat.index') }}" class="menu-item {{ request()->routeIs('surat.index', 'surat.inbox', 'surat.outbox') ? 'active' : '' }}">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M22 12h-6l-2 3h-4l-2-3H2"></path>
+                                <path d="M5.5 5h13a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"></path>
+                            </svg>
+                            <span>Surat</span>
+                        </a>
+                        <a href="{{ route('surat.create') }}" class="menu-item {{ request()->routeIs('surat.create') ? 'active' : '' }}">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                            </svg>
+                            <span>Kirim Surat</span>
+                        </a>
+                        
+                        <a href="{{ route('surat.inventory') }}" class="menu-item {{ request()->routeIs('surat.inventory') ? 'active' : '' }}">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <path d="M7 10l5 5 5-5"></path>
+                                <path d="M12 15V3"></path>
+                            </svg>
+                            <span>Inventori File</span>
+                        </a>
+                    </nav>
+                </aside>
+            @endif
+
+            <div class="app-main">
+                <main class="page">
+                    @if (session('status'))
+                        <div class="alert-ok">{{ session('status') }}</div>
+                    @endif
+                    @yield('content')
+                </main>
+            </div>
+        </div>
+    @else
+        @yield('content')
     @endauth
 
-    <main data-app-main class="mx-auto w-full {{ request()->routeIs('login') ? 'max-w-none px-0 py-0 h-screen overflow-hidden' : (request()->routeIs('surat.archive') ? 'max-w-[92rem] px-4 py-8 sm:px-6 lg:px-8' : 'max-w-6xl px-4 py-8 sm:px-6 lg:px-8') }}">
-        @auth
-            <div class="mb-6 flex flex-wrap items-center gap-3">
-                @if (!request()->routeIs('dashboard'))
-                    <a aria-label="Kembali" title="Kembali" class="inline-flex items-center justify-center rounded-full border border-pink-200 bg-white p-2.5 text-pink-700 shadow-sm transition hover:bg-pink-50" href="{{ route('dashboard') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.56l3.22 3.22a.75.75 0 1 1-1.06 1.06l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5a.75.75 0 0 1 1.06 1.06L5.56 9.25h10.69A.75.75 0 0 1 17 10Z" clip-rule="evenodd" />
-                        </svg>
-                    </a>
-                @endif
-            </div>
-        @endauth
-        @if (session('status'))
-            <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700 shadow-sm">
-                {{ session('status') }}
-            </div>
-        @endif
-        @yield('content')
-    </main>
-
-    @stack('scripts')
+    @auth
     <script>
         (function () {
-            requestAnimationFrame(function () {
-                document.body.classList.add('page-enter-active');
-            });
+            const menuRoot = document.querySelector('[data-account-menu]');
+            if (!menuRoot) {
+                return;
+            }
 
-            window.addEventListener('pageshow', function () {
-                document.body.classList.remove('page-leave');
-                document.body.classList.add('page-enter-active');
-            });
+            const trigger = menuRoot.querySelector('[data-account-trigger]');
+            const dropdown = menuRoot.querySelector('[data-account-dropdown]');
+            if (!trigger || !dropdown) {
+                return;
+            }
+
+            function closeMenu() {
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            function toggleMenu() {
+                const shouldOpen = !dropdown.classList.contains('open');
+                if (shouldOpen) {
+                    dropdown.classList.add('open');
+                    trigger.setAttribute('aria-expanded', 'true');
+                } else {
+                    closeMenu();
+                }
+            }
+
+            trigger.addEventListener('click', toggleMenu);
 
             document.addEventListener('click', function (event) {
-                const link = event.target.closest('a[href]');
-                if (!link) {
-                    return;
+                if (!menuRoot.contains(event.target)) {
+                    closeMenu();
                 }
-
-                const href = link.getAttribute('href') || '';
-                const target = link.getAttribute('target');
-                const isModified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
-                const isInternal = href.startsWith('/') || href.startsWith('{{ url('/') }}');
-                const isHash = href.startsWith('#');
-                const isDownload = link.hasAttribute('download');
-
-                if (event.defaultPrevented || isModified || target === '_blank' || isHash || isDownload || !isInternal) {
-                    return;
-                }
-
-                event.preventDefault();
-                document.body.classList.add('page-leave');
-
-                setTimeout(function () {
-                    window.location.href = link.href;
-                }, 170);
             });
         })();
     </script>
-    @auth
-        <script>
-            (function () {
-                const dropdown = document.querySelector('[data-notif-dropdown]');
-                if (!dropdown) {
-                    return;
-                }
-
-                const toggle = dropdown.querySelector('[data-notif-toggle]');
-                const menu = dropdown.querySelector('[data-notif-menu]');
-                if (!toggle || !menu) {
-                    return;
-                }
-
-                function closeMenu() {
-                    menu.classList.add('hidden');
-                    toggle.setAttribute('aria-expanded', 'false');
-                }
-
-                function openMenu() {
-                    menu.classList.remove('hidden');
-                    toggle.setAttribute('aria-expanded', 'true');
-                }
-
-                toggle.addEventListener('click', function () {
-                    const isHidden = menu.classList.contains('hidden');
-                    if (isHidden) {
-                        openMenu();
-                    } else {
-                        closeMenu();
-                    }
-                });
-
-                document.addEventListener('click', function (event) {
-                    if (!dropdown.contains(event.target)) {
-                        closeMenu();
-                    }
-                });
-            })();
-        </script>
     @endauth
+
+    @stack('scripts')
 </body>
 </html>
-

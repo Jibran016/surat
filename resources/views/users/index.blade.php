@@ -1,26 +1,30 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen Akun - SURATIN')
+@section('title', 'Manajemen Akun - Surat Menyurat')
 
 @section('content')
-<div class="rounded-3xl border border-pink-100 bg-white/90 p-8 shadow-[0_30px_60px_-40px_rgba(236,72,153,0.45)]">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+<div class="rounded-2xl border border-slate-200 bg-white p-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900">Manajemen Akun</h1>
-            <p class="mt-2 text-sm text-slate-500">Kelola akun pengguna dan peran dengan mudah.</p>
+            <h1 class="inline-flex items-center gap-2 text-2xl font-bold text-slate-900">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Manajemen Akun
+            </h1>
+            <p class="mt-1 text-sm text-slate-500">Kelola akun pengguna dan peran.</p>
         </div>
-        <a class="inline-flex items-center gap-2 rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700" href="{{ route('users.create') }}">
+        <a href="{{ route('users.create') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
             Tambah Akun
         </a>
     </div>
 
-    <div class="mt-6">
+    <div class="mt-5">
         @if ($users->isEmpty())
             <p class="text-sm text-slate-500">Belum ada akun.</p>
         @else
-            <div class="overflow-hidden rounded-2xl border border-pink-100">
+            <div class="overflow-hidden rounded-xl border border-slate-200">
                 <table class="w-full text-sm">
-                    <thead class="bg-pink-50/60 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                    <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
                         <tr>
                             <th class="px-4 py-3">Username</th>
                             <th class="px-4 py-3">Divisi</th>
@@ -29,20 +33,20 @@
                             <th class="px-4 py-3 text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-pink-100/70 bg-white">
+                    <tbody class="divide-y divide-slate-200 bg-white">
                         @foreach ($users as $user)
                             <tr>
-                                <td class="px-4 py-3 font-medium text-slate-800">{{ $user->username }}</td>
+                                <td class="px-4 py-3 font-medium text-slate-900">{{ $user->username }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ $user->division ?? '-' }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ $user->role }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ $user->email ?? '-' }}</td>
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center justify-end gap-3">
-                                        <a class="text-sm font-semibold text-pink-700 hover:text-pink-800" href="{{ route('users.edit', $user) }}">Edit</a>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a class="inline-flex rounded-md border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100" href="{{ route('users.edit', $user) }}">Edit</a>
                                         <form method="POST" action="{{ route('users.destroy', $user) }}" onsubmit="return confirm('Hapus akun ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="text-sm font-semibold text-rose-600 hover:text-rose-700" type="submit">Hapus</button>
+                                            <button class="inline-flex rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-100" type="submit">Hapus</button>
                                         </form>
                                     </div>
                                 </td>
@@ -51,25 +55,6 @@
                     </tbody>
                 </table>
             </div>
-
-            @if ($users->hasPages())
-                <div class="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
-                    <div>Halaman {{ $users->currentPage() }} dari {{ $users->lastPage() }}</div>
-                    <div class="flex items-center gap-2">
-                        @if ($users->onFirstPage())
-                            <span class="rounded-full border border-pink-100 px-3 py-1 text-slate-400">Sebelumnya</span>
-                        @else
-                            <a class="rounded-full border border-pink-200 px-3 py-1 font-semibold text-pink-700 hover:bg-pink-50" href="{{ $users->previousPageUrl() }}">Sebelumnya</a>
-                        @endif
-
-                        @if ($users->hasMorePages())
-                            <a class="rounded-full border border-pink-200 px-3 py-1 font-semibold text-pink-700 hover:bg-pink-50" href="{{ $users->nextPageUrl() }}">Berikutnya</a>
-                        @else
-                            <span class="rounded-full border border-pink-100 px-3 py-1 text-slate-400">Berikutnya</span>
-                        @endif
-                    </div>
-                </div>
-            @endif
         @endif
     </div>
 </div>

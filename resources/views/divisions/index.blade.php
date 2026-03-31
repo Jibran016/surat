@@ -1,42 +1,46 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen Divisi - SURATIN')
+@section('title', 'Manajemen Divisi - Surat Menyurat')
 
 @section('content')
-<div class="rounded-3xl border border-pink-100 bg-white/90 p-8 shadow-[0_30px_60px_-40px_rgba(236,72,153,0.45)]">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+<div class="rounded-2xl border border-slate-200 bg-white p-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900">Manajemen Divisi</h1>
-            <p class="mt-2 text-sm text-slate-500">Kelola data divisi untuk kebutuhan surat internal.</p>
+            <h1 class="inline-flex items-center gap-2 text-2xl font-bold text-slate-900">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path></svg>
+                Manajemen Divisi
+            </h1>
+            <p class="mt-1 text-sm text-slate-500">Kelola data divisi untuk kebutuhan surat internal.</p>
         </div>
-        <a class="inline-flex items-center gap-2 rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700" href="{{ route('divisions.create') }}">
+        <a class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700" href="{{ route('divisions.create') }}">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
             Tambah Divisi
         </a>
     </div>
 
-    <div class="mt-6">
+    <div class="mt-5">
         @if ($divisions->isEmpty())
             <p class="text-sm text-slate-500">Belum ada data divisi.</p>
         @else
-            <div class="overflow-hidden rounded-2xl border border-pink-100">
+            <div class="overflow-hidden rounded-xl border border-slate-200">
                 <table class="w-full text-sm">
-                    <thead class="bg-pink-50/60 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                    <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
                         <tr>
                             <th class="px-4 py-3">Divisi</th>
                             <th class="px-4 py-3 text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-pink-100/70 bg-white">
+                    <tbody class="divide-y divide-slate-200 bg-white">
                         @foreach ($divisions as $division)
                             <tr>
-                                <td class="px-4 py-3 font-medium text-slate-800">{{ $division->name }}</td>
+                                <td class="px-4 py-3 font-medium text-slate-900">{{ $division->name }}</td>
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center justify-end gap-3">
-                                        <a class="text-sm font-semibold text-pink-700 hover:text-pink-800" href="{{ route('divisions.edit', $division) }}">Edit</a>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a class="inline-flex rounded-md border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100" href="{{ route('divisions.edit', $division) }}">Edit</a>
                                         <form method="POST" action="{{ route('divisions.destroy', $division) }}" onsubmit="return confirm('Hapus divisi ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="text-sm font-semibold text-rose-600 hover:text-rose-700" type="submit">Hapus</button>
+                                            <button class="inline-flex rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-100" type="submit">Hapus</button>
                                         </form>
                                     </div>
                                 </td>
@@ -45,25 +49,6 @@
                     </tbody>
                 </table>
             </div>
-
-            @if (method_exists($divisions, 'links'))
-                <div class="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
-                    <div>Halaman {{ $divisions->currentPage() }} dari {{ $divisions->lastPage() }}</div>
-                    <div class="flex items-center gap-2">
-                        @if ($divisions->onFirstPage())
-                            <span class="rounded-full border border-pink-100 px-3 py-1 text-slate-400">Sebelumnya</span>
-                        @else
-                            <a class="rounded-full border border-pink-200 px-3 py-1 font-semibold text-pink-700 hover:bg-pink-50" href="{{ $divisions->previousPageUrl() }}">Sebelumnya</a>
-                        @endif
-
-                        @if ($divisions->hasMorePages())
-                            <a class="rounded-full border border-pink-200 px-3 py-1 font-semibold text-pink-700 hover:bg-pink-50" href="{{ $divisions->nextPageUrl() }}">Berikutnya</a>
-                        @else
-                            <span class="rounded-full border border-pink-100 px-3 py-1 text-slate-400">Berikutnya</span>
-                        @endif
-                    </div>
-                </div>
-            @endif
         @endif
     </div>
 </div>

@@ -1,44 +1,51 @@
 @extends('layouts.app')
 
-@section('title', 'Surat Semua Divisi - SURATIN')
+@section('title', 'Surat Semua Divisi - Surat Menyurat')
 
 @section('content')
-<script src="https://unpkg.com/lucide@latest"></script>
-
 @php
     $suratCount = collect($surats ?? [])->count();
 @endphp
 
-<div class="rounded-3xl border border-pink-100 bg-white/90 p-8 shadow-[0_30px_60px_-40px_rgba(236,72,153,0.45)]">
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+<div class="rounded-2xl border border-slate-200 bg-white p-6">
+    <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
-            <div class="text-sm font-semibold uppercase tracking-widest text-pink-600">Admin</div>
-            <h1 class="mt-1 text-2xl font-semibold text-slate-900">Surat Semua Divisi</h1>
+            <h1 class="inline-flex items-center gap-2 text-2xl font-bold text-slate-900">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+                Surat Semua Divisi
+            </h1>
             <p class="mt-1 text-sm text-slate-500">Lihat surat masuk dan keluar seluruh divisi.</p>
         </div>
-        <div class="flex items-center gap-3">
-            <a href="{{ route('dashboard') }}" aria-label="Kembali" title="Kembali" class="inline-flex items-center justify-center rounded-full border border-pink-200 bg-white p-2.5 text-pink-700 shadow-sm transition hover:bg-pink-50">
-                <i data-lucide="arrow-left" class="h-5 w-5"></i>
-            </a>
-            <div class="inline-flex items-center gap-2 rounded-full border border-pink-200 bg-white px-4 py-2 text-sm font-semibold text-pink-700 shadow-sm">
-                Total: {{ $suratCount }}
-            </div>
+        <div class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"></path><path d="M9 9h6v6H9z"></path></svg>
+            Total: {{ $suratCount }}
         </div>
     </div>
 
-    <div class="mb-5 flex flex-wrap gap-2">
-        <a class="rounded-full px-4 py-2 text-sm font-semibold transition {{ ($tipe ?? 'masuk') === 'masuk' ? 'bg-pink-600 text-white shadow-sm' : 'border border-pink-200 bg-white text-pink-700 hover:bg-pink-50' }}" href="{{ route('admin.surat.index', ['tipe' => 'masuk']) }}">
-            Surat Masuk
-        </a>
-        <a class="rounded-full px-4 py-2 text-sm font-semibold transition {{ ($tipe ?? 'masuk') === 'keluar' ? 'bg-pink-600 text-white shadow-sm' : 'border border-pink-200 bg-white text-pink-700 hover:bg-pink-50' }}" href="{{ route('admin.surat.index', ['tipe' => 'keluar']) }}">
-            Surat Keluar
-        </a>
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="inline-flex rounded-full border border-slate-200 bg-slate-50 p-1 text-sm font-semibold">
+            <a class="rounded-full px-3 py-1.5 {{ ($tipe ?? 'masuk') === 'masuk' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600' }}" href="{{ route('admin.surat.index', ['tipe' => 'masuk', 'q' => $search ?? '']) }}">Surat Masuk</a>
+            <a class="rounded-full px-3 py-1.5 {{ ($tipe ?? 'masuk') === 'keluar' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600' }}" href="{{ route('admin.surat.index', ['tipe' => 'keluar', 'q' => $search ?? '']) }}">Surat Keluar</a>
+        </div>
+        <form method="GET" action="{{ route('admin.surat.index') }}" class="flex w-full max-w-md items-center gap-2 sm:w-auto">
+            <input type="hidden" name="tipe" value="{{ $tipe ?? 'masuk' }}">
+            <input
+                type="text"
+                name="q"
+                value="{{ $search ?? '' }}"
+                placeholder="Cari nomor, judul, pengirim, penerima..."
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            >
+            <button type="submit" class="inline-flex shrink-0 items-center rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+                Cari
+            </button>
+        </form>
     </div>
 
-    <div class="overflow-hidden rounded-2xl border border-pink-100">
+    <div class="overflow-hidden rounded-xl border border-slate-200">
         <div class="overflow-auto">
             <table class="w-full text-sm">
-                <thead class="bg-pink-50/60 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
                     <tr>
                         <th class="px-4 py-3">Tanggal</th>
                         <th class="px-4 py-3">Nomor</th>
@@ -49,25 +56,25 @@
                         <th class="px-4 py-3 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-pink-100/70 bg-white">
+                <tbody class="divide-y divide-slate-200 bg-white">
                     @forelse ($surats ?? [] as $surat)
                         @php
                             $ccList = collect($surat->cc_divisions ?? [])->filter()->implode(', ');
                         @endphp
                         <tr>
                             <td class="px-4 py-3 text-slate-600">{{ optional($surat->sent_at)?->timezone(config('app.timezone'))->format('d M Y H:i') ?? '-' }}</td>
-                            <td class="px-4 py-3 font-medium text-slate-800">{{ $surat->nomor_surat ?? '-' }}</td>
+                            <td class="px-4 py-3 font-medium text-slate-900">{{ $surat->nomor_surat ?? '-' }}</td>
                             <td class="px-4 py-3 text-slate-600">{{ $surat->sender_division }}</td>
                             <td class="px-4 py-3 text-slate-600">{{ $surat->recipient_division }}</td>
                             <td class="px-4 py-3 text-slate-600">{{ $ccList !== '' ? $ccList : '-' }}</td>
-                            <td class="px-4 py-3 font-medium text-slate-800">{{ $surat->judul }}</td>
+                            <td class="px-4 py-3 font-medium text-slate-900">{{ $surat->judul }}</td>
                             <td class="px-4 py-3 text-right">
-                                <a class="text-sm font-semibold text-pink-700 hover:text-pink-800" href="{{ route('surat.show', $surat) }}">Detail</a>
+                                <a class="inline-flex items-center gap-1 text-sm font-semibold text-slate-900 hover:text-blue-700" href="{{ route('surat.show', $surat) }}">Detail <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg></a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-4 py-4 text-sm text-slate-500">Belum ada data surat.</td>
+                            <td colspan="7" class="px-4 py-4 text-sm text-slate-500">Belum ada data surat.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -75,8 +82,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    lucide.createIcons();
-</script>
 @endsection

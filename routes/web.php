@@ -20,15 +20,18 @@ Route::get('/logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/grafik', [DashboardController::class, 'chart'])->name('dashboard.chart');
+    Route::get('/dashboard/Dashboard', [DashboardController::class, 'chart'])->name('dashboard.chart');
     Route::get('/dashboard/monitoring', [DashboardController::class, 'monitoring'])->name('dashboard.monitoring');
 
     Route::get('/surat/buat', [SuratController::class, 'create'])->name('surat.create');
     Route::post('/surat', [SuratController::class, 'store'])->name('surat.store');
 
+    Route::get('/surat', [SuratController::class, 'index'])->name('surat.index');
     Route::get('/surat/masuk', [SuratController::class, 'inbox'])->name('surat.inbox');
     Route::get('/surat/keluar', [SuratController::class, 'outbox'])->name('surat.outbox');
-    Route::get('/surat/arsip', [SuratController::class, 'archiveIndex'])->name('surat.archive');
+    Route::get('/surat/inventori-file', [SuratController::class, 'fileInventory'])->name('surat.inventory');
+    Route::get('/surat/inventori-file/upload', [SuratController::class, 'inventoryUploadForm'])->name('surat.inventory.upload');
+    Route::post('/surat/inventori-file', [SuratController::class, 'storeInventory'])->name('surat.inventory.store');
 
     Route::get('/surat/{surat}', [SuratController::class, 'show'])->name('surat.show');
     Route::get('/surat/{surat}/pdf', [SuratController::class, 'downloadPdf'])->name('surat.pdf');
